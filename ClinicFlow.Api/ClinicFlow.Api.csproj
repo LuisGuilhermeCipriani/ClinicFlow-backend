@@ -4,6 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>clinicflow-api-3d04a9b6-2f6c-4f6a-8db0-2a1ecb20f6e1</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
