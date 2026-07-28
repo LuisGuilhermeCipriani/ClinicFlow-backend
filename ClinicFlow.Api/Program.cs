@@ -1,7 +1,13 @@
+using ClinicFlow.Application;
+using ClinicFlow.Infrastructure;
+using ClinicFlow.Infrastructure.Persistence.HealthChecks;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddHealthChecks();
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddHealthChecks().AddCheck<OracleDatabaseHealthCheck>("oracle_database");
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 
