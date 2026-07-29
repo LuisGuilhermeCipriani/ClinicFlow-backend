@@ -1,5 +1,7 @@
+using ClinicFlow.Application.Specialties;
 using ClinicFlow.Infrastructure.Persistence;
 using ClinicFlow.Infrastructure.Persistence.HealthChecks;
+using ClinicFlow.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +29,7 @@ public static class DependencyInjection
             });
         });
 
+        services.AddScoped<ISpecialtyRepository, SpecialtyRepository>();
         services.AddScoped<OracleDatabaseHealthCheck>();
 
         return services;
