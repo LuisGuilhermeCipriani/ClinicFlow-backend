@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Doctors;
 using ClinicFlow.Domain.Specialties;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +8,8 @@ public sealed class ClinicFlowDbContext(DbContextOptions<ClinicFlowDbContext> op
 {
     public const string DefaultSchema = "CLINICFLOW_APP";
     public const string MigrationsHistoryTable = "__EFMigrationsHistory";
+
+    public DbSet<Doctor> Doctors => Set<Doctor>();
 
     public DbSet<Specialty> Specialties => Set<Specialty>();
 
