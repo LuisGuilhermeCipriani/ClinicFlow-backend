@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Doctors;
+using ClinicFlow.Domain.DoctorSchedules;
 using ClinicFlow.Domain.Patients;
 using ClinicFlow.Domain.Specialties;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,8 @@ public sealed class ClinicFlowDbContext(DbContextOptions<ClinicFlowDbContext> op
     public const string MigrationsHistoryTable = "__EFMigrationsHistory";
 
     public DbSet<Doctor> Doctors => Set<Doctor>();
+
+    public DbSet<DoctorSchedule> DoctorSchedules => Set<DoctorSchedule>();
 
     public DbSet<Patient> Patients => Set<Patient>();
 
