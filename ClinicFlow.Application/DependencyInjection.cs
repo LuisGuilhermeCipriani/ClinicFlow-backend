@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Doctors;
+using ClinicFlow.Application.Appointments;
 using ClinicFlow.Application.DoctorSchedules;
 using ClinicFlow.Application.Patients;
 using ClinicFlow.Application.Specialties;
@@ -13,6 +14,7 @@ public static class DependencyInjection
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddScoped<IDoctorService, DoctorService>();
+        services.AddScoped<IAppointmentService, AppointmentService>();
         services.AddScoped<IDoctorScheduleService, DoctorScheduleService>();
         services.AddScoped<IPatientService, PatientService>();
         services.AddScoped<ISpecialtyService, SpecialtyService>();

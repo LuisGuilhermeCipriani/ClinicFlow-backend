@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Doctors;
+using ClinicFlow.Application.Appointments;
 using ClinicFlow.Application.DoctorSchedules;
 using ClinicFlow.Application.Patients;
 using ClinicFlow.Application.Specialties;
@@ -32,6 +33,7 @@ public static class DependencyInjection
             });
         });
 
+        services.AddScoped<IAppointmentRepository, AppointmentRepository>();
         services.AddScoped<IDoctorRepository, DoctorRepository>();
         services.AddScoped<IDoctorScheduleRepository, DoctorScheduleRepository>();
         services.AddScoped<IPatientRepository, PatientRepository>();
