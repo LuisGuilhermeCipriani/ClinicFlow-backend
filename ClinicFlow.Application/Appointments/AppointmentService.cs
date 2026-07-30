@@ -11,6 +11,7 @@ namespace ClinicFlow.Application.Appointments;
 
 public sealed class AppointmentService(
     IAppointmentRepository repository,
+    IAppointmentHistoryRepository historyRepository,
     IDoctorRepository doctorRepository,
     IPatientRepository patientRepository,
     IDoctorScheduleRepository doctorScheduleRepository) : IAppointmentService
@@ -142,6 +143,112 @@ public sealed class AppointmentService(
         return MapToDetailsDto(appointment, doctor.Name, patient.Name);
     }
 
+    public async Task<AppointmentDetailsDto?> CancelAsync(long id, CancelAppointmentRequest request, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var appointment = await repository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
+        if (appointment is null)
+        {
+            return null;
+        }
+
+        if (appointment.Status != AppointmentStatus.Scheduled)
+        {
+            throw new InvalidOperationException("A consulta precisa estar agendada para ser cancelada.");
+        }
+
+        var doctor = await GetActiveDoctorAsync(appointment.DoctorId, cancellationToken).ConfigureAwait(false);
+        var patient = await GetActivePatientAsync(appointment.PatientId, cancellationToken).ConfigureAwait(false);
+
+        var history = AppointmentHistory.CreateCancellation(
+            id,
+            appointment.AppointmentDate,
+            appointment.StartMinute,
+            appointment.EndMinute,
+            request.Reason,
+            DateTimeOffset.UtcNow,
+            "system");
+
+        appointment.Cancel(DateTimeOffset.UtcNow, "system");
+
+        await historyRepository.AddAsync(history, cancellationToken).ConfigureAwait(false);
+        repository.Update(appointment);
+        await historyRepository.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        await repository.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        return MapToDetailsDto(appointment, doctor.Name, patient.Name);
+    }
+
+    public async Task<AppointmentDetailsDto?> RescheduleAsync(long id, RescheduleAppointmentRequest request, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var appointment = await repository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
+        if (appointment is null)
+        {
+            return null;
+        }
+
+        if (appointment.Status != AppointmentStatus.Scheduled)
+        {
+            throw new InvalidOperationException("A consulta precisa estar agendada para ser reagendada.");
+        }
+
+        var doctor = await GetActiveDoctorAsync(request.DoctorId, cancellationToken).ConfigureAwait(false);
+        var patient = await GetActivePatientAsync(request.PatientId, cancellationToken).ConfigureAwait(false);
+        var appointmentDate = request.AppointmentDate.Date;
+        var startMinute = ParseTimeToMinutes(request.StartTime, nameof(request.StartTime));
+        var endMinute = startMinute + request.DurationMinutes;
+
+        await EnsureDoctorHasAvailabilityAsync(doctor.Id, appointmentDate, startMinute, endMinute, cancellationToken).ConfigureAwait(false);
+        await EnsureNoConflictsAsync(doctor.Id, patient.Id, appointmentDate, startMinute, endMinute, cancellationToken, appointment.Id).ConfigureAwait(false);
+
+        var history = AppointmentHistory.CreateReschedule(
+            id,
+            appointment.AppointmentDate,
+            appointment.StartMinute,
+            appointment.EndMinute,
+            appointmentDate,
+            startMinute,
+            endMinute,
+            request.Reason,
+            DateTimeOffset.UtcNow,
+            "system");
+
+        appointment.Update(
+            request.DoctorId,
+            request.PatientId,
+            appointmentDate,
+            startMinute,
+            request.DurationMinutes,
+            DateTimeOffset.UtcNow,
+            "system");
+        appointment.Schedule(DateTimeOffset.UtcNow, "system");
+
+        await historyRepository.AddAsync(history, cancellationToken).ConfigureAwait(false);
+        repository.Update(appointment);
+        await historyRepository.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        await repository.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        return MapToDetailsDto(appointment, doctor.Name, patient.Name);
+    }
+
+    public async Task<IReadOnlyCollection<AppointmentHistoryDto>?> GetHistoryAsync(long id, CancellationToken cancellationToken = default)
+    {
+        var appointment = await repository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
+        if (appointment is null)
+        {
+            return null;
+        }
+
+        var histories = await historyRepository.GetByAppointmentIdAsync(id, cancellationToken).ConfigureAwait(false);
+        return histories
+            .OrderByDescending(history => history.CreatedAt)
+            .Select(MapToHistoryDto)
+            .ToArray();
+    }
+
     public async Task<bool> DeleteAsync(long id, CancellationToken cancellationToken = default)
     {
         var appointment = await repository.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
@@ -262,5 +369,22 @@ public sealed class AppointmentService(
             appointment.UpdatedBy,
             appointment.DeletedAt,
             appointment.DeletedBy);
+    }
+
+    private static AppointmentHistoryDto MapToHistoryDto(AppointmentHistory history)
+    {
+        return new AppointmentHistoryDto(
+            history.Id,
+            history.AppointmentId,
+            history.ChangeType,
+            history.PreviousAppointmentDate,
+            FormatMinutes(history.PreviousStartMinute),
+            FormatMinutes(history.PreviousEndMinute),
+            history.NewAppointmentDate,
+            history.NewStartMinute is null ? null : FormatMinutes(history.NewStartMinute.Value),
+            history.NewEndMinute is null ? null : FormatMinutes(history.NewEndMinute.Value),
+            history.Reason,
+            history.CreatedAt,
+            history.CreatedBy);
     }
 }

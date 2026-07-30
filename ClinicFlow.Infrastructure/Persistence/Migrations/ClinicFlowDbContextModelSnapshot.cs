@@ -392,6 +392,91 @@ namespace ClinicFlow.Infrastructure.Persistence.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("ClinicFlow.Domain.Appointments.AppointmentHistory", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(19)");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("AppointmentId")
+                        .HasColumnType("NUMBER(19)");
+
+                    b.Property<byte[]>("ConcurrencyToken")
+                        .HasColumnType("RAW(2000)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(128)
+                        .HasColumnType("NVARCHAR2(128)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(128)
+                        .HasColumnType("NVARCHAR2(128)");
+
+                    b.Property<int>("ChangeType")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("BOOLEAN");
+
+                    b.Property<DateTime?>("NewAppointmentDate")
+                        .HasColumnType("DATE");
+
+                    b.Property<int?>("NewEndMinute")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<int?>("NewStartMinute")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<DateTime>("PreviousAppointmentDate")
+                        .HasColumnType("DATE");
+
+                    b.Property<int>("PreviousEndMinute")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<int>("PreviousStartMinute")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(500)
+                        .HasColumnType("NVARCHAR2(500)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(128)
+                        .HasColumnType("NVARCHAR2(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId")
+                        .HasDatabaseName("IX_APPOINTMENT_HISTORY_APPOINTMENT");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_APPOINTMENT_HISTORY_CREATED_AT");
+
+                    b.ToTable("APPOINTMENT_HISTORY", "CLINICFLOW_APP");
+                });
+
+            modelBuilder.Entity("ClinicFlow.Domain.Appointments.AppointmentHistory", b =>
+                {
+                    b.HasOne("ClinicFlow.Domain.Appointments.Appointment", "Appointment")
+                        .WithMany()
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Appointment");
+                });
+
             modelBuilder.Entity("ClinicFlow.Domain.Doctors.Doctor", b =>
                 {
                     b.HasOne("ClinicFlow.Domain.Specialties.Specialty", "Specialty")

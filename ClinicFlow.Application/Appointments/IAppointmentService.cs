@@ -10,5 +10,11 @@ public interface IAppointmentService
 
     Task<AppointmentDetailsDto?> UpdateAsync(long id, UpdateAppointmentRequest request, CancellationToken cancellationToken = default);
 
+    Task<AppointmentDetailsDto?> CancelAsync(long id, CancelAppointmentRequest request, CancellationToken cancellationToken = default);
+
+    Task<AppointmentDetailsDto?> RescheduleAsync(long id, RescheduleAppointmentRequest request, CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyCollection<AppointmentHistoryDto>?> GetHistoryAsync(long id, CancellationToken cancellationToken = default);
+
     Task<bool> DeleteAsync(long id, CancellationToken cancellationToken = default);
 }

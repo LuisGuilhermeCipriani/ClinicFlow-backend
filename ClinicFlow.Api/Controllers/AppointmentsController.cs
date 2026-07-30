@@ -57,4 +57,37 @@ public sealed class AppointmentsController(IAppointmentService appointmentServic
         var deleted = await appointmentService.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
         return deleted ? NoContent() : NotFound();
     }
+
+    [HttpPatch("{id:long}/cancel")]
+    [ProducesResponseType(typeof(AppointmentDetailsDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<AppointmentDetailsDto>> CancelAsync(
+        long id,
+        [FromBody] CancelAppointmentRequest request,
+        CancellationToken cancellationToken)
+    {
+        var appointment = await appointmentService.CancelAsync(id, request, cancellationToken).ConfigureAwait(false);
+        return appointment is null ? NotFound() : Ok(appointment);
+    }
+
+    [HttpPatch("{id:long}/reschedule")]
+    [ProducesResponseType(typeof(AppointmentDetailsDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<AppointmentDetailsDto>> RescheduleAsync(
+        long id,
+        [FromBody] RescheduleAppointmentRequest request,
+        CancellationToken cancellationToken)
+    {
+        var appointment = await appointmentService.RescheduleAsync(id, request, cancellationToken).ConfigureAwait(false);
+        return appointment is null ? NotFound() : Ok(appointment);
+    }
+
+    [HttpGet("{id:long}/history")]
+    [ProducesResponseType(typeof(IReadOnlyCollection<AppointmentHistoryDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IReadOnlyCollection<AppointmentHistoryDto>>> GetHistoryAsync(long id, CancellationToken cancellationToken)
+    {
+        var history = await appointmentService.GetHistoryAsync(id, cancellationToken).ConfigureAwait(false);
+        return history is null ? NotFound() : Ok(history);
+    }
 }

@@ -16,6 +16,8 @@ public sealed class ClinicFlowDbContext(DbContextOptions<ClinicFlowDbContext> op
 
     public DbSet<Appointment> Appointments => Set<Appointment>();
 
+    public DbSet<AppointmentHistory> AppointmentHistories => Set<AppointmentHistory>();
+
     public DbSet<DoctorSchedule> DoctorSchedules => Set<DoctorSchedule>();
 
     public DbSet<Patient> Patients => Set<Patient>();
