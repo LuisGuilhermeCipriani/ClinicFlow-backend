@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Doctors;
+using ClinicFlow.Application.Patients;
 using ClinicFlow.Application.Specialties;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +12,7 @@ public static class DependencyInjection
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddScoped<IDoctorService, DoctorService>();
+        services.AddScoped<IPatientService, PatientService>();
         services.AddScoped<ISpecialtyService, SpecialtyService>();
 
         return services;

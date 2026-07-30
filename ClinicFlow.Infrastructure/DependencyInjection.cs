@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Doctors;
+using ClinicFlow.Application.Patients;
 using ClinicFlow.Application.Specialties;
 using ClinicFlow.Infrastructure.Persistence;
 using ClinicFlow.Infrastructure.Persistence.HealthChecks;
@@ -31,6 +32,7 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IDoctorRepository, DoctorRepository>();
+        services.AddScoped<IPatientRepository, PatientRepository>();
         services.AddScoped<ISpecialtyRepository, SpecialtyRepository>();
         services.AddScoped<OracleDatabaseHealthCheck>();
 
