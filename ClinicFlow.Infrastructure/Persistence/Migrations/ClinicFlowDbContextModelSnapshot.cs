@@ -542,6 +542,82 @@ namespace ClinicFlow.Infrastructure.Persistence.Migrations
                     b.ToTable("APPOINTMENT_HISTORY", "CLINICFLOW_APP");
                 });
 
+            modelBuilder.Entity("ClinicFlow.Domain.ClinicalRecords.ClinicalRecord", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(19)");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("AppointmentId")
+                        .HasColumnType("NUMBER(19)");
+
+                    b.Property<long>("DoctorId")
+                        .HasColumnType("NUMBER(19)");
+
+                    b.Property<byte[]>("ConcurrencyToken")
+                        .HasColumnType("RAW(2000)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(128)
+                        .HasColumnType("NVARCHAR2(128)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(128)
+                        .HasColumnType("NVARCHAR2(128)");
+
+                    b.Property<string>("ChiefComplaint")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("NVARCHAR2(500)");
+
+                    b.Property<string>("Diagnosis")
+                        .HasMaxLength(1000)
+                        .HasColumnType("NVARCHAR2(1000)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("BOOLEAN");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("NVARCHAR2(2000)");
+
+                    b.Property<string>("Prescription")
+                        .HasMaxLength(1000)
+                        .HasColumnType("NVARCHAR2(1000)");
+
+                    b.Property<long>("PatientId")
+                        .HasColumnType("NUMBER(19)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(128)
+                        .HasColumnType("NVARCHAR2(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_CLINICAL_RECORDS_APPOINTMENT");
+
+                    b.HasIndex("DoctorId")
+                        .HasDatabaseName("IX_CLINICAL_RECORDS_DOCTOR");
+
+                    b.HasIndex("PatientId")
+                        .HasDatabaseName("IX_CLINICAL_RECORDS_PATIENT");
+
+                    b.ToTable("CLINICAL_RECORDS", "CLINICFLOW_APP");
+                });
+
             modelBuilder.Entity("ClinicFlow.Domain.Appointments.AppointmentHistory", b =>
                 {
                     b.HasOne("ClinicFlow.Domain.Appointments.Appointment", "Appointment")
@@ -551,6 +627,33 @@ namespace ClinicFlow.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Appointment");
+                });
+
+            modelBuilder.Entity("ClinicFlow.Domain.ClinicalRecords.ClinicalRecord", b =>
+                {
+                    b.HasOne("ClinicFlow.Domain.Appointments.Appointment", "Appointment")
+                        .WithMany()
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ClinicFlow.Domain.Doctors.Doctor", "Doctor")
+                        .WithMany()
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ClinicFlow.Domain.Patients.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Appointment");
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Doctors.Doctor", b =>

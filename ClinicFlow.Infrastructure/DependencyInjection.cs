@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Doctors;
+using ClinicFlow.Application.ClinicalRecords;
 using ClinicFlow.Application.Appointments;
 using ClinicFlow.Application.Authentication;
 using ClinicFlow.Application.DoctorSchedules;
@@ -43,6 +44,7 @@ public static class DependencyInjection
         services.AddSingleton<IUserPasswordHasher, ClinicFlowPasswordHasher>();
         services.AddScoped<IAppointmentHistoryRepository, AppointmentHistoryRepository>();
         services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+        services.AddScoped<IClinicalRecordRepository, ClinicalRecordRepository>();
         services.AddScoped<IDoctorRepository, DoctorRepository>();
         services.AddScoped<IDoctorScheduleRepository, DoctorScheduleRepository>();
         services.AddScoped<IPatientRepository, PatientRepository>();

@@ -1,0 +1,3 @@
+namespace ClinicFlow.Application.ClinicalRecords;
+
+public sealed record PagedResult<T>(IReadOnlyCollection<T> Items, int Page, int PageSize, int TotalCount);

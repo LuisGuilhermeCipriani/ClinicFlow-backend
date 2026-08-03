@@ -35,6 +35,16 @@ builder.Services.AddAuthorization(options =>
         policy.RequireRole(ClinicFlowRoles.Admin);
     });
 
+    options.AddPolicy(ClinicFlowAuthorizationPolicies.ViewClinicalRecords, policy =>
+    {
+        policy.RequireRole(ClinicFlowRoles.Admin, ClinicFlowRoles.Doctor);
+    });
+
+    options.AddPolicy(ClinicFlowAuthorizationPolicies.ManageClinicalRecords, policy =>
+    {
+        policy.RequireRole(ClinicFlowRoles.Admin, ClinicFlowRoles.Doctor);
+    });
+
     options.FallbackPolicy = new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
         .Build();

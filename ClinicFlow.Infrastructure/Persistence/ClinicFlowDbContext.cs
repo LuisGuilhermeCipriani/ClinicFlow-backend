@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Appointments;
+using ClinicFlow.Domain.ClinicalRecords;
 using ClinicFlow.Domain.Doctors;
 using ClinicFlow.Domain.DoctorSchedules;
 using ClinicFlow.Domain.Patients;
@@ -18,6 +19,8 @@ public sealed class ClinicFlowDbContext(DbContextOptions<ClinicFlowDbContext> op
     public DbSet<Appointment> Appointments => Set<Appointment>();
 
     public DbSet<AppointmentHistory> AppointmentHistories => Set<AppointmentHistory>();
+
+    public DbSet<ClinicalRecord> ClinicalRecords => Set<ClinicalRecord>();
 
     public DbSet<DoctorSchedule> DoctorSchedules => Set<DoctorSchedule>();
 
