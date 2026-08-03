@@ -1,10 +1,13 @@
 using ClinicFlow.Application.DoctorSchedules;
+using ClinicFlow.Application.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicFlow.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Policy = ClinicFlowAuthorizationPolicies.ViewClinicData)]
 public sealed class DoctorSchedulesController(IDoctorScheduleService doctorScheduleService) : ControllerBase
 {
     [HttpGet]
@@ -27,6 +30,7 @@ public sealed class DoctorSchedulesController(IDoctorScheduleService doctorSched
     }
 
     [HttpPost]
+    [Authorize(Policy = ClinicFlowAuthorizationPolicies.ManageClinicData)]
     [ProducesResponseType(typeof(DoctorScheduleDetailsDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<DoctorScheduleDetailsDto>> CreateAsync(
@@ -38,6 +42,7 @@ public sealed class DoctorSchedulesController(IDoctorScheduleService doctorSched
     }
 
     [HttpPut("{id:long}")]
+    [Authorize(Policy = ClinicFlowAuthorizationPolicies.ManageClinicData)]
     [ProducesResponseType(typeof(DoctorScheduleDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<DoctorScheduleDetailsDto>> UpdateAsync(
@@ -50,6 +55,7 @@ public sealed class DoctorSchedulesController(IDoctorScheduleService doctorSched
     }
 
     [HttpDelete("{id:long}")]
+    [Authorize(Policy = ClinicFlowAuthorizationPolicies.ManageClinicData)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteAsync(long id, CancellationToken cancellationToken)
@@ -59,6 +65,7 @@ public sealed class DoctorSchedulesController(IDoctorScheduleService doctorSched
     }
 
     [HttpPatch("{id:long}/activate")]
+    [Authorize(Policy = ClinicFlowAuthorizationPolicies.ManageClinicData)]
     [ProducesResponseType(typeof(DoctorScheduleDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<DoctorScheduleDetailsDto>> ActivateAsync(long id, CancellationToken cancellationToken)
@@ -68,6 +75,7 @@ public sealed class DoctorSchedulesController(IDoctorScheduleService doctorSched
     }
 
     [HttpPatch("{id:long}/deactivate")]
+    [Authorize(Policy = ClinicFlowAuthorizationPolicies.ManageClinicData)]
     [ProducesResponseType(typeof(DoctorScheduleDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<DoctorScheduleDetailsDto>> DeactivateAsync(long id, CancellationToken cancellationToken)

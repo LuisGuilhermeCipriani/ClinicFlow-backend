@@ -1,10 +1,13 @@
 using ClinicFlow.Application.Appointments;
+using ClinicFlow.Application.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicFlow.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Policy = ClinicFlowAuthorizationPolicies.ViewClinicData)]
 public sealed class AppointmentsController(IAppointmentService appointmentService) : ControllerBase
 {
     [HttpGet]
@@ -27,6 +30,7 @@ public sealed class AppointmentsController(IAppointmentService appointmentServic
     }
 
     [HttpPost]
+    [Authorize(Policy = ClinicFlowAuthorizationPolicies.ManageClinicData)]
     [ProducesResponseType(typeof(AppointmentDetailsDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<AppointmentDetailsDto>> CreateAsync(
@@ -38,6 +42,7 @@ public sealed class AppointmentsController(IAppointmentService appointmentServic
     }
 
     [HttpPut("{id:long}")]
+    [Authorize(Policy = ClinicFlowAuthorizationPolicies.ManageClinicData)]
     [ProducesResponseType(typeof(AppointmentDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<AppointmentDetailsDto>> UpdateAsync(
@@ -50,6 +55,7 @@ public sealed class AppointmentsController(IAppointmentService appointmentServic
     }
 
     [HttpDelete("{id:long}")]
+    [Authorize(Policy = ClinicFlowAuthorizationPolicies.ManageClinicData)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteAsync(long id, CancellationToken cancellationToken)
@@ -59,6 +65,7 @@ public sealed class AppointmentsController(IAppointmentService appointmentServic
     }
 
     [HttpPatch("{id:long}/cancel")]
+    [Authorize(Policy = ClinicFlowAuthorizationPolicies.ManageClinicData)]
     [ProducesResponseType(typeof(AppointmentDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<AppointmentDetailsDto>> CancelAsync(
@@ -71,6 +78,7 @@ public sealed class AppointmentsController(IAppointmentService appointmentServic
     }
 
     [HttpPatch("{id:long}/reschedule")]
+    [Authorize(Policy = ClinicFlowAuthorizationPolicies.ManageClinicData)]
     [ProducesResponseType(typeof(AppointmentDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<AppointmentDetailsDto>> RescheduleAsync(

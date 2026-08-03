@@ -1,10 +1,13 @@
 using ClinicFlow.Application.Specialties;
+using ClinicFlow.Application.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicFlow.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Policy = ClinicFlowAuthorizationPolicies.ViewClinicData)]
 public sealed class SpecialtiesController(ISpecialtyService specialtyService) : ControllerBase
 {
     [HttpGet]
@@ -32,6 +35,7 @@ public sealed class SpecialtiesController(ISpecialtyService specialtyService) : 
     }
 
     [HttpPost]
+    [Authorize(Policy = ClinicFlowAuthorizationPolicies.ManageClinicData)]
     [ProducesResponseType(typeof(SpecialtyDetailsDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<SpecialtyDetailsDto>> CreateAsync(
@@ -43,6 +47,7 @@ public sealed class SpecialtiesController(ISpecialtyService specialtyService) : 
     }
 
     [HttpPut("{id:long}")]
+    [Authorize(Policy = ClinicFlowAuthorizationPolicies.ManageClinicData)]
     [ProducesResponseType(typeof(SpecialtyDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<SpecialtyDetailsDto>> UpdateAsync(
@@ -60,6 +65,7 @@ public sealed class SpecialtiesController(ISpecialtyService specialtyService) : 
     }
 
     [HttpDelete("{id:long}")]
+    [Authorize(Policy = ClinicFlowAuthorizationPolicies.ManageClinicData)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteAsync(long id, CancellationToken cancellationToken)
@@ -69,6 +75,7 @@ public sealed class SpecialtiesController(ISpecialtyService specialtyService) : 
     }
 
     [HttpPatch("{id:long}/activate")]
+    [Authorize(Policy = ClinicFlowAuthorizationPolicies.ManageClinicData)]
     [ProducesResponseType(typeof(SpecialtyDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<SpecialtyDetailsDto>> ActivateAsync(long id, CancellationToken cancellationToken)
@@ -78,6 +85,7 @@ public sealed class SpecialtiesController(ISpecialtyService specialtyService) : 
     }
 
     [HttpPatch("{id:long}/deactivate")]
+    [Authorize(Policy = ClinicFlowAuthorizationPolicies.ManageClinicData)]
     [ProducesResponseType(typeof(SpecialtyDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<SpecialtyDetailsDto>> DeactivateAsync(long id, CancellationToken cancellationToken)

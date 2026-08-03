@@ -1,10 +1,13 @@
 using ClinicFlow.Application.Doctors;
+using ClinicFlow.Application.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicFlow.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Policy = ClinicFlowAuthorizationPolicies.ViewClinicData)]
 public sealed class DoctorsController(IDoctorService doctorService) : ControllerBase
 {
     [HttpGet]
@@ -27,6 +30,7 @@ public sealed class DoctorsController(IDoctorService doctorService) : Controller
     }
 
     [HttpPost]
+    [Authorize(Policy = ClinicFlowAuthorizationPolicies.ManageClinicData)]
     [ProducesResponseType(typeof(DoctorDetailsDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<DoctorDetailsDto>> CreateAsync(
@@ -38,6 +42,7 @@ public sealed class DoctorsController(IDoctorService doctorService) : Controller
     }
 
     [HttpPut("{id:long}")]
+    [Authorize(Policy = ClinicFlowAuthorizationPolicies.ManageClinicData)]
     [ProducesResponseType(typeof(DoctorDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<DoctorDetailsDto>> UpdateAsync(
@@ -50,6 +55,7 @@ public sealed class DoctorsController(IDoctorService doctorService) : Controller
     }
 
     [HttpDelete("{id:long}")]
+    [Authorize(Policy = ClinicFlowAuthorizationPolicies.ManageClinicData)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteAsync(long id, CancellationToken cancellationToken)
@@ -59,6 +65,7 @@ public sealed class DoctorsController(IDoctorService doctorService) : Controller
     }
 
     [HttpPatch("{id:long}/activate")]
+    [Authorize(Policy = ClinicFlowAuthorizationPolicies.ManageClinicData)]
     [ProducesResponseType(typeof(DoctorDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<DoctorDetailsDto>> ActivateAsync(long id, CancellationToken cancellationToken)
@@ -68,6 +75,7 @@ public sealed class DoctorsController(IDoctorService doctorService) : Controller
     }
 
     [HttpPatch("{id:long}/deactivate")]
+    [Authorize(Policy = ClinicFlowAuthorizationPolicies.ManageClinicData)]
     [ProducesResponseType(typeof(DoctorDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<DoctorDetailsDto>> DeactivateAsync(long id, CancellationToken cancellationToken)

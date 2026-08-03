@@ -20,6 +20,16 @@ builder.Services.AddAuthentication(ClinicFlowAuthenticationDefaults.Authenticati
         options => { });
 builder.Services.AddAuthorization(options =>
 {
+    options.AddPolicy(ClinicFlowAuthorizationPolicies.ViewClinicData, policy =>
+    {
+        policy.RequireRole(ClinicFlowRoles.Admin, ClinicFlowRoles.Receptionist, ClinicFlowRoles.Doctor);
+    });
+
+    options.AddPolicy(ClinicFlowAuthorizationPolicies.ManageClinicData, policy =>
+    {
+        policy.RequireRole(ClinicFlowRoles.Admin, ClinicFlowRoles.Receptionist);
+    });
+
     options.FallbackPolicy = new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
         .Build();
