@@ -15,6 +15,20 @@ public sealed class AppointmentRepository(ClinicFlowDbContext context) : IAppoin
             .ConfigureAwait(false);
     }
 
+    public async Task<IReadOnlyCollection<Appointment>> GetByPatientIdAsync(long patientId, CancellationToken cancellationToken = default)
+    {
+        return await context.Appointments
+            .Include(appointment => appointment.Doctor)
+            .Include(appointment => appointment.Patient)
+            .AsNoTracking()
+            .Where(appointment => appointment.PatientId == patientId)
+            .OrderByDescending(appointment => appointment.AppointmentDate)
+            .ThenByDescending(appointment => appointment.StartMinute)
+            .ThenByDescending(appointment => appointment.Id)
+            .ToArrayAsync(cancellationToken)
+            .ConfigureAwait(false);
+    }
+
     public async Task<PagedResult<Appointment>> SearchAsync(
         long? doctorId,
         long? patientId,

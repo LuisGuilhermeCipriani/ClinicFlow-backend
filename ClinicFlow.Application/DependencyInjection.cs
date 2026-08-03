@@ -2,6 +2,7 @@ using ClinicFlow.Application.Doctors;
 using ClinicFlow.Application.ClinicalRecords;
 using ClinicFlow.Application.Appointments;
 using ClinicFlow.Application.DoctorSchedules;
+using ClinicFlow.Application.PatientHistory;
 using ClinicFlow.Application.Patients;
 using ClinicFlow.Application.Specialties;
 using ClinicFlow.Application.Users;
@@ -19,6 +20,7 @@ public static class DependencyInjection
         services.AddScoped<IAppointmentService, AppointmentService>();
         services.AddScoped<IDoctorScheduleService, DoctorScheduleService>();
         services.AddScoped<IClinicalRecordService, ClinicalRecordService>();
+        services.AddScoped<IPatientHistoryService, PatientHistoryService>();
         services.AddScoped<IPatientService, PatientService>();
         services.AddScoped<ISpecialtyService, SpecialtyService>();
         services.AddScoped<IUserService, UserService>();

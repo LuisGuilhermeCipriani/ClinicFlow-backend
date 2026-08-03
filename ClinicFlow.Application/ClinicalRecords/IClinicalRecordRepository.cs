@@ -8,6 +8,8 @@ public interface IClinicalRecordRepository
 
     Task<ClinicalRecord?> GetByAppointmentIdAsync(long appointmentId, CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyCollection<ClinicalRecord>> GetByPatientIdAsync(long patientId, CancellationToken cancellationToken = default);
+
     Task<PagedResult<ClinicalRecord>> SearchAsync(
         long? appointmentId,
         long? patientId,

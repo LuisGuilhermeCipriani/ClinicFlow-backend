@@ -16,6 +16,17 @@ public sealed class ClinicalRecordRepository(ClinicFlowDbContext context) : ICli
         return await context.ClinicalRecords.AsNoTracking().FirstOrDefaultAsync(record => record.AppointmentId == appointmentId, cancellationToken).ConfigureAwait(false);
     }
 
+    public async Task<IReadOnlyCollection<ClinicalRecord>> GetByPatientIdAsync(long patientId, CancellationToken cancellationToken = default)
+    {
+        return await context.ClinicalRecords
+            .AsNoTracking()
+            .Where(record => record.PatientId == patientId && !record.IsDeleted)
+            .OrderByDescending(record => record.CreatedAt)
+            .ThenByDescending(record => record.Id)
+            .ToArrayAsync(cancellationToken)
+            .ConfigureAwait(false);
+    }
+
     public async Task<PagedResult<ClinicalRecord>> SearchAsync(
         long? appointmentId,
         long? patientId,

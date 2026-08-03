@@ -6,6 +6,8 @@ public interface IAppointmentRepository
 {
     Task<Appointment?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyCollection<Appointment>> GetByPatientIdAsync(long patientId, CancellationToken cancellationToken = default);
+
     Task<PagedResult<Appointment>> SearchAsync(
         long? doctorId,
         long? patientId,
