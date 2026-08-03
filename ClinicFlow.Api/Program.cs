@@ -1,6 +1,10 @@
 using ClinicFlow.Application;
+using ClinicFlow.Application.Authentication;
 using ClinicFlow.Infrastructure;
+using ClinicFlow.Api.Authentication;
 using ClinicFlow.Infrastructure.Persistence.HealthChecks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +14,16 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHealthChecks().AddCheck<OracleDatabaseHealthCheck>("oracle_database");
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
+builder.Services.AddAuthentication(ClinicFlowAuthenticationDefaults.AuthenticationScheme)
+    .AddScheme<AuthenticationSchemeOptions, ClinicFlowBearerAuthenticationHandler>(
+        ClinicFlowAuthenticationDefaults.AuthenticationScheme,
+        options => { });
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
 
@@ -34,15 +48,16 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.MapOpenApi().AllowAnonymous();
 }
 
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
 app.UseCors("Frontend");
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHealthChecks("/health");
+app.MapHealthChecks("/health").AllowAnonymous();
 
 app.Run();

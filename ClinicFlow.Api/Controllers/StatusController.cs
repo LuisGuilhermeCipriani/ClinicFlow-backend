@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicFlow.Api.Controllers;
 
 [ApiController]
 [Route("api/status")]
+[AllowAnonymous]
 public class StatusController : ControllerBase
 {
     private readonly IHostEnvironment environment;

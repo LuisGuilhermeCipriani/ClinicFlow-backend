@@ -1,8 +1,10 @@
 using ClinicFlow.Application.Doctors;
 using ClinicFlow.Application.Appointments;
+using ClinicFlow.Application.Authentication;
 using ClinicFlow.Application.DoctorSchedules;
 using ClinicFlow.Application.Patients;
 using ClinicFlow.Application.Specialties;
+using ClinicFlow.Infrastructure.Authentication;
 using ClinicFlow.Infrastructure.Persistence;
 using ClinicFlow.Infrastructure.Persistence.HealthChecks;
 using ClinicFlow.Infrastructure.Persistence.Repositories;
@@ -19,6 +21,8 @@ public static class DependencyInjection
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
 
+        services.Configure<ClinicFlowAuthenticationOptions>(configuration.GetSection(ClinicFlowAuthenticationOptions.SectionName));
+
         var connectionString = configuration.GetConnectionString("OracleDatabase");
         if (string.IsNullOrWhiteSpace(connectionString))
         {
@@ -33,6 +37,8 @@ public static class DependencyInjection
             });
         });
 
+        services.AddScoped<IAuthenticationService, ClinicFlowAuthenticationService>();
+        services.AddSingleton<IAuthenticationTokenService, ClinicFlowTokenService>();
         services.AddScoped<IAppointmentHistoryRepository, AppointmentHistoryRepository>();
         services.AddScoped<IAppointmentRepository, AppointmentRepository>();
         services.AddScoped<IDoctorRepository, DoctorRepository>();
