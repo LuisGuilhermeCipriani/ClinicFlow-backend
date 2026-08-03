@@ -362,6 +362,82 @@ namespace ClinicFlow.Infrastructure.Persistence.Migrations
                     b.ToTable("SPECIALTIES", "CLINICFLOW_APP");
                 });
 
+            modelBuilder.Entity("ClinicFlow.Domain.Users.User", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(19)");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<byte[]>("ConcurrencyToken")
+                        .HasColumnType("RAW(2000)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(128)
+                        .HasColumnType("NVARCHAR2(128)");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(128)
+                        .HasColumnType("NVARCHAR2(128)");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("NVARCHAR2(150)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("BOOLEAN");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("NVARCHAR2(254)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("NVARCHAR2(256)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("NVARCHAR2(50)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("NVARCHAR2(50)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(128)
+                        .HasColumnType("NVARCHAR2(128)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasDatabaseName("UX_USERS_EMAIL");
+
+                    b.HasIndex("Username")
+                        .IsUnique()
+                        .HasDatabaseName("UX_USERS_USERNAME");
+
+                    b.ToTable("USERS", "CLINICFLOW_APP");
+                });
+
             modelBuilder.Entity("ClinicFlow.Domain.DoctorSchedules.DoctorSchedule", b =>
                 {
                     b.HasOne("ClinicFlow.Domain.Doctors.Doctor", "Doctor")

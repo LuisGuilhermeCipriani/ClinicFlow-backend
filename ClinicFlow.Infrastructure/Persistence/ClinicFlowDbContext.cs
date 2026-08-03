@@ -3,6 +3,7 @@ using ClinicFlow.Domain.Doctors;
 using ClinicFlow.Domain.DoctorSchedules;
 using ClinicFlow.Domain.Patients;
 using ClinicFlow.Domain.Specialties;
+using ClinicFlow.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicFlow.Infrastructure.Persistence;
@@ -23,6 +24,8 @@ public sealed class ClinicFlowDbContext(DbContextOptions<ClinicFlowDbContext> op
     public DbSet<Patient> Patients => Set<Patient>();
 
     public DbSet<Specialty> Specialties => Set<Specialty>();
+
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

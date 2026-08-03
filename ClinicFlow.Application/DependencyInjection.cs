@@ -3,6 +3,7 @@ using ClinicFlow.Application.Appointments;
 using ClinicFlow.Application.DoctorSchedules;
 using ClinicFlow.Application.Patients;
 using ClinicFlow.Application.Specialties;
+using ClinicFlow.Application.Users;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ClinicFlow.Application;
@@ -18,6 +19,7 @@ public static class DependencyInjection
         services.AddScoped<IDoctorScheduleService, DoctorScheduleService>();
         services.AddScoped<IPatientService, PatientService>();
         services.AddScoped<ISpecialtyService, SpecialtyService>();
+        services.AddScoped<IUserService, UserService>();
 
         return services;
     }

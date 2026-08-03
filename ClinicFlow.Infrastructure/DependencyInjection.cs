@@ -4,6 +4,7 @@ using ClinicFlow.Application.Authentication;
 using ClinicFlow.Application.DoctorSchedules;
 using ClinicFlow.Application.Patients;
 using ClinicFlow.Application.Specialties;
+using ClinicFlow.Application.Users;
 using ClinicFlow.Infrastructure.Authentication;
 using ClinicFlow.Infrastructure.Persistence;
 using ClinicFlow.Infrastructure.Persistence.HealthChecks;
@@ -39,12 +40,14 @@ public static class DependencyInjection
 
         services.AddScoped<IAuthenticationService, ClinicFlowAuthenticationService>();
         services.AddSingleton<IAuthenticationTokenService, ClinicFlowTokenService>();
+        services.AddSingleton<IUserPasswordHasher, ClinicFlowPasswordHasher>();
         services.AddScoped<IAppointmentHistoryRepository, AppointmentHistoryRepository>();
         services.AddScoped<IAppointmentRepository, AppointmentRepository>();
         services.AddScoped<IDoctorRepository, DoctorRepository>();
         services.AddScoped<IDoctorScheduleRepository, DoctorScheduleRepository>();
         services.AddScoped<IPatientRepository, PatientRepository>();
         services.AddScoped<ISpecialtyRepository, SpecialtyRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<OracleDatabaseHealthCheck>();
 
         return services;

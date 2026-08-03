@@ -30,6 +30,11 @@ builder.Services.AddAuthorization(options =>
         policy.RequireRole(ClinicFlowRoles.Admin, ClinicFlowRoles.Receptionist);
     });
 
+    options.AddPolicy(ClinicFlowAuthorizationPolicies.ManageUsers, policy =>
+    {
+        policy.RequireRole(ClinicFlowRoles.Admin);
+    });
+
     options.FallbackPolicy = new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
         .Build();
