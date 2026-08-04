@@ -22,6 +22,29 @@ public sealed class ClinicFlowAuthenticationService(
         }
 
         var normalizedUsername = request.Username.Trim();
+        var configuredUser = authenticationOptions.Users.FirstOrDefault(item =>
+            string.Equals(item.Username.Trim(), normalizedUsername, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(item.Password, request.Password, StringComparison.Ordinal));
+
+        if (configuredUser is not null)
+        {
+            var configuredIssuedAt = DateTimeOffset.UtcNow;
+            var configuredExpiresAt = configuredIssuedAt.AddMinutes(authenticationOptions.TokenLifetimeMinutes <= 0 ? 480 : authenticationOptions.TokenLifetimeMinutes);
+            var configuredAuthenticatedUser = new AuthenticatedUser(
+                configuredUser.Username.Trim(),
+                string.IsNullOrWhiteSpace(configuredUser.DisplayName) ? configuredUser.Username.Trim() : configuredUser.DisplayName.Trim(),
+                string.IsNullOrWhiteSpace(configuredUser.Role) ? "User" : configuredUser.Role.Trim());
+
+            var configuredAccessToken = tokenService.CreateToken(configuredAuthenticatedUser, configuredIssuedAt, configuredExpiresAt);
+
+            return new AuthenticationResponseDto(
+                configuredAccessToken,
+                "Bearer",
+                configuredExpiresAt,
+                configuredAuthenticatedUser.Username,
+                configuredAuthenticatedUser.DisplayName,
+                configuredAuthenticatedUser.Role);
+        }
 
         var user = await userRepository.GetByUsernameAsync(normalizedUsername, cancellationToken).ConfigureAwait(false);
         if (user is not null)
@@ -46,30 +69,6 @@ public sealed class ClinicFlowAuthenticationService(
                 authenticatedUser.Role);
         }
 
-        var configuredUser = authenticationOptions.Users.FirstOrDefault(item =>
-            string.Equals(item.Username.Trim(), normalizedUsername, StringComparison.OrdinalIgnoreCase) &&
-            string.Equals(item.Password, request.Password, StringComparison.Ordinal));
-
-        if (configuredUser is null)
-        {
-            return null;
-        }
-
-        var configuredIssuedAt = DateTimeOffset.UtcNow;
-        var configuredExpiresAt = configuredIssuedAt.AddMinutes(authenticationOptions.TokenLifetimeMinutes <= 0 ? 480 : authenticationOptions.TokenLifetimeMinutes);
-        var configuredAuthenticatedUser = new AuthenticatedUser(
-            configuredUser.Username.Trim(),
-            string.IsNullOrWhiteSpace(configuredUser.DisplayName) ? configuredUser.Username.Trim() : configuredUser.DisplayName.Trim(),
-            string.IsNullOrWhiteSpace(configuredUser.Role) ? "User" : configuredUser.Role.Trim());
-
-        var configuredAccessToken = tokenService.CreateToken(configuredAuthenticatedUser, configuredIssuedAt, configuredExpiresAt);
-
-        return new AuthenticationResponseDto(
-            configuredAccessToken,
-            "Bearer",
-            configuredExpiresAt,
-            configuredAuthenticatedUser.Username,
-            configuredAuthenticatedUser.DisplayName,
-            configuredAuthenticatedUser.Role);
+        return null;
     }
 }
