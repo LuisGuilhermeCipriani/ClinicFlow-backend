@@ -2,6 +2,7 @@ using ClinicFlow.Application;
 using ClinicFlow.Application.Authentication;
 using ClinicFlow.Infrastructure;
 using ClinicFlow.Api.Authentication;
+using ClinicFlow.Api.Middleware;
 using ClinicFlow.Infrastructure.Persistence.HealthChecks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -76,7 +77,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi().AllowAnonymous();
 }
 
-app.UseExceptionHandler();
+app.UseMiddleware<RequestLoggingAndErrorHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseCors("Frontend");
 app.UseAuthentication();
