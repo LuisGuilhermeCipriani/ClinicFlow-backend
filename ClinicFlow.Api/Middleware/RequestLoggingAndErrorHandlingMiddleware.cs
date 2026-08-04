@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using System.Text.Json;
+using ClinicFlow.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ClinicFlow.Api.Middleware;
 
@@ -62,20 +64,11 @@ public sealed class RequestLoggingAndErrorHandlingMiddleware(
                 throw;
             }
 
-            context.Response.Clear();
-            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-            context.Response.ContentType = "application/problem+json";
+            var problem = CreateProblemDetails(exception, context);
 
-            var problem = new ProblemDetails
-            {
-                Status = StatusCodes.Status500InternalServerError,
-                Title = "Ocorreu um erro inesperado ao processar a requisição.",
-                Detail = environment.IsDevelopment()
-                    ? exception.Message
-                    : "A operação não pôde ser concluída no momento.",
-                Instance = context.Request.Path.Value,
-                Type = "https://tools.ietf.org/html/rfc9110#section-15.6.1"
-            };
+            context.Response.Clear();
+            context.Response.StatusCode = problem.Status ?? StatusCodes.Status500InternalServerError;
+            context.Response.ContentType = "application/problem+json";
 
             await JsonSerializer.SerializeAsync(
                 context.Response.Body,
@@ -83,5 +76,60 @@ public sealed class RequestLoggingAndErrorHandlingMiddleware(
                 SerializerOptions,
                 context.RequestAborted).ConfigureAwait(false);
         }
+    }
+
+    private ProblemDetails CreateProblemDetails(Exception exception, HttpContext context)
+    {
+        ArgumentNullException.ThrowIfNull(exception);
+        ArgumentNullException.ThrowIfNull(context);
+
+        var baseException = exception.GetBaseException();
+
+        if (exception is DomainValidationException domainValidationException)
+        {
+            return new ProblemDetails
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "Uma ou mais validações de domínio falharam.",
+                Detail = string.Join(" ", domainValidationException.Errors),
+                Instance = context.Request.Path.Value,
+                Type = "https://tools.ietf.org/html/rfc9110#section-15.5.1"
+            };
+        }
+
+        if (exception is InvalidOperationException)
+        {
+            return new ProblemDetails
+            {
+                Status = StatusCodes.Status409Conflict,
+                Title = exception.Message,
+                Detail = baseException.Message,
+                Instance = context.Request.Path.Value,
+                Type = "https://tools.ietf.org/html/rfc9110#section-15.5.10"
+            };
+        }
+
+        if (exception is DbUpdateException)
+        {
+            return new ProblemDetails
+            {
+                Status = StatusCodes.Status500InternalServerError,
+                Title = "Não foi possível salvar as alterações no banco de dados.",
+                Detail = baseException.Message,
+                Instance = context.Request.Path.Value,
+                Type = "https://tools.ietf.org/html/rfc9110#section-15.6.1"
+            };
+        }
+
+        return new ProblemDetails
+        {
+            Status = StatusCodes.Status500InternalServerError,
+            Title = "Ocorreu um erro inesperado ao processar a requisição.",
+            Detail = environment.IsDevelopment()
+                ? baseException.Message
+                : "A operação não pôde ser concluída no momento.",
+            Instance = context.Request.Path.Value,
+            Type = "https://tools.ietf.org/html/rfc9110#section-15.6.1"
+        };
     }
 }
