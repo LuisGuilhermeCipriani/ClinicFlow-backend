@@ -25,6 +25,7 @@ public sealed class DoctorRepository(ClinicFlowDbContext context) : IDoctorRepos
         var query = context.Doctors
             .Include(doctor => doctor.Specialty)
             .AsNoTracking()
+            .Where(doctor => !doctor.IsDeleted)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(searchTerm))

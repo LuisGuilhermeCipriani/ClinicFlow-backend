@@ -24,7 +24,30 @@ public static class DependencyInjection
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
 
-        services.Configure<ClinicFlowAuthenticationOptions>(configuration.GetSection(ClinicFlowAuthenticationOptions.SectionName));
+        services.Configure<ClinicFlowAuthenticationOptions>(options =>
+        {
+            var authSection = configuration.GetSection(ClinicFlowAuthenticationOptions.SectionName);
+            options.Issuer = authSection["Issuer"] ?? options.Issuer;
+            options.Audience = authSection["Audience"] ?? options.Audience;
+            options.SigningKey = authSection["SigningKey"] ?? options.SigningKey;
+
+            if (int.TryParse(authSection["TokenLifetimeMinutes"], out var tokenLifetimeMinutes))
+            {
+                options.TokenLifetimeMinutes = tokenLifetimeMinutes;
+            }
+
+            var usersSection = authSection.GetSection("Users");
+            options.Users = usersSection
+                .GetChildren()
+                .Select(userSection => new ClinicFlowAuthenticationUserOptions
+                {
+                    Username = userSection["Username"] ?? string.Empty,
+                    Password = userSection["Password"] ?? string.Empty,
+                    DisplayName = userSection["DisplayName"] ?? string.Empty,
+                    Role = userSection["Role"] ?? "User"
+                })
+                .ToList();
+        });
 
         var connectionString = configuration.GetConnectionString("OracleDatabase");
         if (string.IsNullOrWhiteSpace(connectionString))

@@ -55,21 +55,21 @@ public sealed class ClinicFlowAuthenticationService(
             return null;
         }
 
-        var issuedAt = DateTimeOffset.UtcNow;
-        var expiresAt = issuedAt.AddMinutes(authenticationOptions.TokenLifetimeMinutes <= 0 ? 480 : authenticationOptions.TokenLifetimeMinutes);
-        var authenticatedUser = new AuthenticatedUser(
+        var configuredIssuedAt = DateTimeOffset.UtcNow;
+        var configuredExpiresAt = configuredIssuedAt.AddMinutes(authenticationOptions.TokenLifetimeMinutes <= 0 ? 480 : authenticationOptions.TokenLifetimeMinutes);
+        var configuredAuthenticatedUser = new AuthenticatedUser(
             configuredUser.Username.Trim(),
             string.IsNullOrWhiteSpace(configuredUser.DisplayName) ? configuredUser.Username.Trim() : configuredUser.DisplayName.Trim(),
             string.IsNullOrWhiteSpace(configuredUser.Role) ? "User" : configuredUser.Role.Trim());
 
-        var accessToken = tokenService.CreateToken(authenticatedUser, issuedAt, expiresAt);
+        var configuredAccessToken = tokenService.CreateToken(configuredAuthenticatedUser, configuredIssuedAt, configuredExpiresAt);
 
         return new AuthenticationResponseDto(
-            accessToken,
+            configuredAccessToken,
             "Bearer",
-            expiresAt,
-            authenticatedUser.Username,
-            authenticatedUser.DisplayName,
-            authenticatedUser.Role);
+            configuredExpiresAt,
+            configuredAuthenticatedUser.Username,
+            configuredAuthenticatedUser.DisplayName,
+            configuredAuthenticatedUser.Role);
     }
 }

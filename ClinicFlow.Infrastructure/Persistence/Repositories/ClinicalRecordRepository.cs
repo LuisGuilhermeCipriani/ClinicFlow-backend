@@ -57,12 +57,12 @@ public sealed class ClinicalRecordRepository(ClinicFlowDbContext context) : ICli
 
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            var normalized = searchTerm.Trim();
+            var normalized = searchTerm.Trim().ToUpperInvariant();
             query = query.Where(record =>
-                record.ChiefComplaint.Contains(normalized) ||
-                (record.Diagnosis != null && record.Diagnosis.Contains(normalized)) ||
-                (record.Prescription != null && record.Prescription.Contains(normalized)) ||
-                (record.Notes != null && record.Notes.Contains(normalized)));
+                record.ChiefComplaint.ToUpper().Contains(normalized) ||
+                (record.Diagnosis != null && record.Diagnosis.ToUpper().Contains(normalized)) ||
+                (record.Prescription != null && record.Prescription.ToUpper().Contains(normalized)) ||
+                (record.Notes != null && record.Notes.ToUpper().Contains(normalized)));
         }
 
         var totalCount = await query.CountAsync(cancellationToken).ConfigureAwait(false);

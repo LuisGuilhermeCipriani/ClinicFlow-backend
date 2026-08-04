@@ -20,7 +20,10 @@ public sealed class SpecialtyRepository(ClinicFlowDbContext context) : ISpecialt
         int pageSize,
         CancellationToken cancellationToken = default)
     {
-        var query = context.Specialties.AsNoTracking().AsQueryable();
+        var query = context.Specialties
+            .AsNoTracking()
+            .Where(specialty => !specialty.IsDeleted)
+            .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {

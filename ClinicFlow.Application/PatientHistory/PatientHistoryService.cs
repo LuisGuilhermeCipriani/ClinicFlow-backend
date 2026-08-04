@@ -1,6 +1,7 @@
 using ClinicFlow.Application.Appointments;
 using ClinicFlow.Application.ClinicalRecords;
 using ClinicFlow.Application.Doctors;
+using ClinicFlow.Application.Patients;
 using ClinicFlow.Domain.Appointments;
 using ClinicFlow.Domain.ClinicalRecords;
 using ClinicFlow.Domain.Doctors;

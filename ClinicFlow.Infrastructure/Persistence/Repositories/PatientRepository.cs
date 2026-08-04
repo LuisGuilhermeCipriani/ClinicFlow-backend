@@ -21,7 +21,10 @@ public sealed class PatientRepository(ClinicFlowDbContext context) : IPatientRep
         int pageSize,
         CancellationToken cancellationToken = default)
     {
-        var query = context.Patients.AsNoTracking().AsQueryable();
+        var query = context.Patients
+            .AsNoTracking()
+            .Where(patient => !patient.IsDeleted)
+            .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
