@@ -52,7 +52,7 @@ public static class DependencyInjection
         var connectionString = configuration.GetConnectionString("OracleDatabase");
         if (string.IsNullOrWhiteSpace(connectionString))
         {
-            connectionString = "User Id=CLINICFLOW_APP;Password=CHANGE_ME_LOCALLY;Data Source=localhost:1521/XEPDB1";
+            connectionString = "User Id=CLINICFLOW_APP;Password=CHANGE_ME_LOCALLY_123;Data Source=host.docker.internal:1521/XEPDB1";
         }
 
         services.AddDbContext<ClinicFlowDbContext>(options =>
