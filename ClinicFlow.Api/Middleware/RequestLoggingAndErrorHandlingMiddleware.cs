@@ -115,7 +115,7 @@ public sealed class RequestLoggingAndErrorHandlingMiddleware(
             return new ProblemDetails
             {
                 Status = StatusCodes.Status500InternalServerError,
-                Title = "Não foi possível salvar as alterações no banco de dados.",
+                Title = "Não foi possível salvar as alterações no momento.",
                 Detail = baseException.Message,
                 Instance = context.Request.Path.Value,
                 Type = "https://tools.ietf.org/html/rfc9110#section-15.6.1"
@@ -127,7 +127,7 @@ public sealed class RequestLoggingAndErrorHandlingMiddleware(
             return new ProblemDetails
             {
                 Status = StatusCodes.Status503ServiceUnavailable,
-                Title = "Não foi possível acessar o banco de dados.",
+                Title = "Não foi possível concluir a operação no momento.",
                 Detail = baseException.Message,
                 Instance = context.Request.Path.Value,
                 Type = "https://tools.ietf.org/html/rfc9110#section-15.6.4"
