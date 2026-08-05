@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Data.Common;
 using System.Text.Json;
 using ClinicFlow.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -118,6 +119,18 @@ public sealed class RequestLoggingAndErrorHandlingMiddleware(
                 Detail = baseException.Message,
                 Instance = context.Request.Path.Value,
                 Type = "https://tools.ietf.org/html/rfc9110#section-15.6.1"
+            };
+        }
+
+        if (exception is DbException)
+        {
+            return new ProblemDetails
+            {
+                Status = StatusCodes.Status503ServiceUnavailable,
+                Title = "Não foi possível acessar o banco de dados.",
+                Detail = baseException.Message,
+                Instance = context.Request.Path.Value,
+                Type = "https://tools.ietf.org/html/rfc9110#section-15.6.4"
             };
         }
 
