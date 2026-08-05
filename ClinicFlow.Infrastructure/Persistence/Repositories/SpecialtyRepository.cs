@@ -1,5 +1,6 @@
 using ClinicFlow.Application.Specialties;
 using ClinicFlow.Domain.Specialties;
+using ClinicFlow.Domain.Primitives;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicFlow.Infrastructure.Persistence.Repositories;
@@ -53,13 +54,17 @@ public sealed class SpecialtyRepository(ClinicFlowDbContext context) : ISpecialt
     public async Task<bool> ExistsByNameAsync(string name, long? excludeId = null, CancellationToken cancellationToken = default)
     {
         var normalized = name.Trim().ToUpper();
+        var query = context.Specialties.Where(specialty =>
+            specialty.Name.ToUpper() == normalized &&
+            EF.Property<int>(specialty, nameof(AuditableEntity.IsDeleted)) == 0);
 
-        return await context.Specialties.AnyAsync(specialty =>
-                specialty.Name.ToUpper() == normalized &&
-                (!excludeId.HasValue || specialty.Id != excludeId.Value) &&
-                !specialty.IsDeleted,
-            cancellationToken)
-            .ConfigureAwait(false);
+        if (excludeId.HasValue)
+        {
+            var value = excludeId.Value;
+            query = query.Where(specialty => specialty.Id != value);
+        }
+
+        return await query.CountAsync(cancellationToken).ConfigureAwait(false) > 0;
     }
 
     public async Task AddAsync(Specialty specialty, CancellationToken cancellationToken = default)

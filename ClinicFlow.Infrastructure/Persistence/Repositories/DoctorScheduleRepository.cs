@@ -1,5 +1,6 @@
 using ClinicFlow.Application.DoctorSchedules;
 using ClinicFlow.Domain.DoctorSchedules;
+using ClinicFlow.Domain.Primitives;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicFlow.Infrastructure.Persistence.Repositories;
@@ -63,15 +64,20 @@ public sealed class DoctorScheduleRepository(ClinicFlowDbContext context) : IDoc
         long? excludeId = null,
         CancellationToken cancellationToken = default)
     {
-        return await context.DoctorSchedules.AnyAsync(schedule =>
-                schedule.DoctorId == doctorId &&
-                schedule.DayOfWeek == dayOfWeek &&
-                schedule.StartMinute == startMinute &&
-                schedule.EndMinute == endMinute &&
-                (!excludeId.HasValue || schedule.Id != excludeId.Value) &&
-                !schedule.IsDeleted,
-            cancellationToken)
-            .ConfigureAwait(false);
+        var query = context.DoctorSchedules.Where(schedule =>
+            schedule.DoctorId == doctorId &&
+            schedule.DayOfWeek == dayOfWeek &&
+            schedule.StartMinute == startMinute &&
+            schedule.EndMinute == endMinute &&
+            EF.Property<int>(schedule, nameof(AuditableEntity.IsDeleted)) == 0);
+
+        if (excludeId.HasValue)
+        {
+            var value = excludeId.Value;
+            query = query.Where(schedule => schedule.Id != value);
+        }
+
+        return await query.CountAsync(cancellationToken).ConfigureAwait(false) > 0;
     }
 
     public async Task AddAsync(DoctorSchedule schedule, CancellationToken cancellationToken = default)

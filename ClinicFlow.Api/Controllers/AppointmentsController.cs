@@ -20,7 +20,7 @@ public sealed class AppointmentsController(IAppointmentService appointmentServic
         return Ok(result);
     }
 
-    [HttpGet("{id:long}")]
+    [HttpGet("{id:long}", Name = "Appointments_GetById")]
     [ProducesResponseType(typeof(AppointmentDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<AppointmentDetailsDto>> GetByIdAsync(long id, CancellationToken cancellationToken)
@@ -38,7 +38,7 @@ public sealed class AppointmentsController(IAppointmentService appointmentServic
         CancellationToken cancellationToken)
     {
         var appointment = await appointmentService.CreateAsync(request, cancellationToken).ConfigureAwait(false);
-        return CreatedAtAction(nameof(GetByIdAsync), new { id = appointment.Id }, appointment);
+        return CreatedAtRoute("Appointments_GetById", new { id = appointment.Id }, appointment);
     }
 
     [HttpPut("{id:long}")]

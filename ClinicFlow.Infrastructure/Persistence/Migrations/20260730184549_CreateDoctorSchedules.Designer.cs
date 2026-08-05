@@ -67,7 +67,7 @@ namespace ClinicFlow.Infrastructure.Persistence.Migrations
                         .HasColumnType("NVARCHAR2(254)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -138,7 +138,7 @@ namespace ClinicFlow.Infrastructure.Persistence.Migrations
                         .HasColumnType("NUMBER(10)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<int>("SlotDurationMinutes")
                         .HasColumnType("NUMBER(10)");
@@ -209,7 +209,7 @@ namespace ClinicFlow.Infrastructure.Persistence.Migrations
                         .HasColumnType("NUMBER(10)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -270,7 +270,7 @@ namespace ClinicFlow.Infrastructure.Persistence.Migrations
                         .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Name")
                         .IsRequired()

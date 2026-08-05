@@ -56,7 +56,7 @@ namespace ClinicFlow.Infrastructure.Persistence.Migrations
                         .HasColumnType("NVARCHAR2(500)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("BOOLEAN");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<string>("Name")
                         .IsRequired()

@@ -30,7 +30,7 @@ namespace ClinicFlow.Infrastructure.Persistence.Migrations
                     CreatedBy = table.Column<string>(type: "NVARCHAR2(128)", maxLength: 128, nullable: true),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: true),
                     UpdatedBy = table.Column<string>(type: "NVARCHAR2(128)", maxLength: 128, nullable: true),
-                    IsDeleted = table.Column<bool>(type: "BOOLEAN", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "NUMBER(1)", nullable: false),
                     DeletedAt = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: true),
                     DeletedBy = table.Column<string>(type: "NVARCHAR2(128)", maxLength: 128, nullable: true)
                 },

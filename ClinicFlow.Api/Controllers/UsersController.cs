@@ -18,7 +18,7 @@ public sealed class UsersController(IUserService userService) : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("{id:long}")]
+    [HttpGet("{id:long}", Name = "Users_GetById")]
     [ProducesResponseType(typeof(UserDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UserDetailsDto>> GetByIdAsync(long id, CancellationToken cancellationToken)
@@ -32,7 +32,7 @@ public sealed class UsersController(IUserService userService) : ControllerBase
     public async Task<ActionResult<UserDetailsDto>> CreateAsync([FromBody] CreateUserRequest request, CancellationToken cancellationToken)
     {
         var user = await userService.CreateAsync(request, cancellationToken).ConfigureAwait(false);
-        return CreatedAtAction(nameof(GetByIdAsync), new { id = user.Id }, user);
+        return CreatedAtRoute("Users_GetById", new { id = user.Id }, user);
     }
 
     [HttpPut("{id:long}")]

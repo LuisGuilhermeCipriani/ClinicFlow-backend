@@ -20,7 +20,7 @@ public sealed class DoctorSchedulesController(IDoctorScheduleService doctorSched
         return Ok(result);
     }
 
-    [HttpGet("{id:long}")]
+    [HttpGet("{id:long}", Name = "DoctorSchedules_GetById")]
     [ProducesResponseType(typeof(DoctorScheduleDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<DoctorScheduleDetailsDto>> GetByIdAsync(long id, CancellationToken cancellationToken)
@@ -38,7 +38,7 @@ public sealed class DoctorSchedulesController(IDoctorScheduleService doctorSched
         CancellationToken cancellationToken)
     {
         var schedule = await doctorScheduleService.CreateAsync(request, cancellationToken).ConfigureAwait(false);
-        return CreatedAtAction(nameof(GetByIdAsync), new { id = schedule.Id }, schedule);
+        return CreatedAtRoute("DoctorSchedules_GetById", new { id = schedule.Id }, schedule);
     }
 
     [HttpPut("{id:long}")]

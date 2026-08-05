@@ -20,7 +20,7 @@ public sealed class DoctorsController(IDoctorService doctorService) : Controller
         return Ok(result);
     }
 
-    [HttpGet("{id:long}")]
+    [HttpGet("{id:long}", Name = "Doctors_GetById")]
     [ProducesResponseType(typeof(DoctorDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<DoctorDetailsDto>> GetByIdAsync(long id, CancellationToken cancellationToken)
@@ -38,7 +38,7 @@ public sealed class DoctorsController(IDoctorService doctorService) : Controller
         CancellationToken cancellationToken)
     {
         var doctor = await doctorService.CreateAsync(request, cancellationToken).ConfigureAwait(false);
-        return CreatedAtAction(nameof(GetByIdAsync), new { id = doctor.Id }, doctor);
+        return CreatedAtRoute("Doctors_GetById", new { id = doctor.Id }, doctor);
     }
 
     [HttpPut("{id:long}")]

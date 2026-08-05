@@ -1,5 +1,6 @@
 using ClinicFlow.Application.ClinicalRecords;
 using ClinicFlow.Domain.ClinicalRecords;
+using ClinicFlow.Domain.Primitives;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicFlow.Infrastructure.Persistence.Repositories;
@@ -20,7 +21,7 @@ public sealed class ClinicalRecordRepository(ClinicFlowDbContext context) : ICli
     {
         return await context.ClinicalRecords
             .AsNoTracking()
-            .Where(record => record.PatientId == patientId && !record.IsDeleted)
+            .Where(record => record.PatientId == patientId && EF.Property<int>(record, nameof(AuditableEntity.IsDeleted)) == 0)
             .OrderByDescending(record => record.CreatedAt)
             .ThenByDescending(record => record.Id)
             .ToArrayAsync(cancellationToken)
@@ -37,7 +38,7 @@ public sealed class ClinicalRecordRepository(ClinicFlowDbContext context) : ICli
         CancellationToken cancellationToken = default)
     {
         var query = context.ClinicalRecords.AsNoTracking()
-            .Where(record => !record.IsDeleted)
+            .Where(record => EF.Property<int>(record, nameof(AuditableEntity.IsDeleted)) == 0)
             .AsQueryable();
 
         if (appointmentId is not null)

@@ -1,5 +1,6 @@
 using ClinicFlow.Application.Patients;
 using ClinicFlow.Domain.Patients;
+using ClinicFlow.Domain.Primitives;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicFlow.Infrastructure.Persistence.Repositories;
@@ -62,13 +63,17 @@ public sealed class PatientRepository(ClinicFlowDbContext context) : IPatientRep
     public async Task<bool> ExistsByCpfAsync(string cpf, long? excludeId = null, CancellationToken cancellationToken = default)
     {
         var normalized = NormalizeCpf(cpf);
+        var query = context.Patients.Where(patient =>
+            patient.Cpf == normalized &&
+            EF.Property<int>(patient, nameof(AuditableEntity.IsDeleted)) == 0);
 
-        return await context.Patients.AnyAsync(patient =>
-                patient.Cpf == normalized &&
-                (!excludeId.HasValue || patient.Id != excludeId.Value) &&
-                !patient.IsDeleted,
-            cancellationToken)
-            .ConfigureAwait(false);
+        if (excludeId.HasValue)
+        {
+            var value = excludeId.Value;
+            query = query.Where(patient => patient.Id != value);
+        }
+
+        return await query.CountAsync(cancellationToken).ConfigureAwait(false) > 0;
     }
 
     public async Task AddAsync(Patient patient, CancellationToken cancellationToken = default)

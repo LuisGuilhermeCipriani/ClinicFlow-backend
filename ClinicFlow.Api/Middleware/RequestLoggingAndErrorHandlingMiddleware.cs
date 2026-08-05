@@ -21,7 +21,7 @@ public sealed class RequestLoggingAndErrorHandlingMiddleware(
         try
         {
             logger.LogInformation(
-                "HTTP request started {Method} {Path} TraceId={TraceId}",
+                "Requisição HTTP iniciada {Method} {Path} TraceId={TraceId}",
                 context.Request.Method,
                 context.Request.Path.Value,
                 context.TraceIdentifier);
@@ -30,7 +30,7 @@ public sealed class RequestLoggingAndErrorHandlingMiddleware(
 
             stopwatch.Stop();
             logger.LogInformation(
-                "HTTP request completed {Method} {Path} StatusCode={StatusCode} ElapsedMs={ElapsedMs} TraceId={TraceId}",
+                "Requisição HTTP concluída {Method} {Path} StatusCode={StatusCode} ElapsedMs={ElapsedMs} TraceId={TraceId}",
                 context.Request.Method,
                 context.Request.Path.Value,
                 context.Response.StatusCode,
@@ -41,7 +41,7 @@ public sealed class RequestLoggingAndErrorHandlingMiddleware(
         {
             stopwatch.Stop();
             logger.LogWarning(
-                "HTTP request cancelled {Method} {Path} ElapsedMs={ElapsedMs} TraceId={TraceId}",
+                "Requisição HTTP cancelada {Method} {Path} ElapsedMs={ElapsedMs} TraceId={TraceId}",
                 context.Request.Method,
                 context.Request.Path.Value,
                 stopwatch.ElapsedMilliseconds,
@@ -54,7 +54,7 @@ public sealed class RequestLoggingAndErrorHandlingMiddleware(
 
             logger.LogError(
                 exception,
-                "Unhandled exception while processing {Method} {Path} ElapsedMs={ElapsedMs} TraceId={TraceId}",
+                "Exceção não tratada ao processar {Method} {Path} ElapsedMs={ElapsedMs} TraceId={TraceId}",
                 context.Request.Method,
                 context.Request.Path.Value,
                 stopwatch.ElapsedMilliseconds,

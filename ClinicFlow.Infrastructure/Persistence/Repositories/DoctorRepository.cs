@@ -1,5 +1,6 @@
 using ClinicFlow.Application.Doctors;
 using ClinicFlow.Domain.Doctors;
+using ClinicFlow.Domain.Primitives;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicFlow.Infrastructure.Persistence.Repositories;
@@ -65,14 +66,18 @@ public sealed class DoctorRepository(ClinicFlowDbContext context) : IDoctorRepos
     {
         var normalizedNumber = crmNumber.Trim().ToUpper();
         var normalizedState = crmState.Trim().ToUpper();
+        var query = context.Doctors.Where(doctor =>
+            doctor.CrmNumber.ToUpper() == normalizedNumber &&
+            doctor.CrmState.ToUpper() == normalizedState &&
+            EF.Property<int>(doctor, nameof(AuditableEntity.IsDeleted)) == 0);
 
-        return await context.Doctors.AnyAsync(doctor =>
-                doctor.CrmNumber.ToUpper() == normalizedNumber &&
-                doctor.CrmState.ToUpper() == normalizedState &&
-                (!excludeId.HasValue || doctor.Id != excludeId.Value) &&
-                !doctor.IsDeleted,
-            cancellationToken)
-            .ConfigureAwait(false);
+        if (excludeId.HasValue)
+        {
+            var value = excludeId.Value;
+            query = query.Where(doctor => doctor.Id != value);
+        }
+
+        return await query.CountAsync(cancellationToken).ConfigureAwait(false) > 0;
     }
 
     public async Task AddAsync(Doctor doctor, CancellationToken cancellationToken = default)

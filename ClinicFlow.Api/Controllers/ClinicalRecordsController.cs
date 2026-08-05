@@ -20,7 +20,7 @@ public sealed class ClinicalRecordsController(IClinicalRecordService clinicalRec
         return Ok(result);
     }
 
-    [HttpGet("{id:long}")]
+    [HttpGet("{id:long}", Name = "ClinicalRecords_GetById")]
     [ProducesResponseType(typeof(ClinicalRecordDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ClinicalRecordDetailsDto>> GetByIdAsync(long id, CancellationToken cancellationToken)
@@ -44,7 +44,7 @@ public sealed class ClinicalRecordsController(IClinicalRecordService clinicalRec
     public async Task<ActionResult<ClinicalRecordDetailsDto>> CreateAsync([FromBody] CreateClinicalRecordRequest request, CancellationToken cancellationToken)
     {
         var record = await clinicalRecordService.CreateAsync(request, cancellationToken).ConfigureAwait(false);
-        return CreatedAtAction(nameof(GetByIdAsync), new { id = record.Id }, record);
+        return CreatedAtRoute("ClinicalRecords_GetById", new { id = record.Id }, record);
     }
 
     [HttpPut("{id:long}")]

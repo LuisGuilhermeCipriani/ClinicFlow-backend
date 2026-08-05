@@ -1,5 +1,6 @@
 using ClinicFlow.Application.Appointments;
 using ClinicFlow.Domain.Appointments;
+using ClinicFlow.Domain.Primitives;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicFlow.Infrastructure.Persistence.Repositories;
@@ -81,33 +82,41 @@ public sealed class AppointmentRepository(ClinicFlowDbContext context) : IAppoin
     public async Task<bool> HasDoctorConflictAsync(long doctorId, DateTime appointmentDate, int startMinute, int endMinute, long? excludeId = null, CancellationToken cancellationToken = default)
     {
         var date = appointmentDate.Date;
+        var query = context.Appointments.Where(appointment =>
+            appointment.DoctorId == doctorId &&
+            appointment.AppointmentDate == date &&
+            appointment.Status == AppointmentStatus.Scheduled &&
+            EF.Property<int>(appointment, nameof(AuditableEntity.IsDeleted)) == 0 &&
+            appointment.StartMinute < endMinute &&
+            appointment.EndMinute > startMinute);
 
-        return await context.Appointments.AnyAsync(appointment =>
-                appointment.DoctorId == doctorId &&
-                appointment.AppointmentDate == date &&
-                appointment.Status == AppointmentStatus.Scheduled &&
-                !appointment.IsDeleted &&
-                appointment.StartMinute < endMinute &&
-                appointment.EndMinute > startMinute &&
-                (!excludeId.HasValue || appointment.Id != excludeId.Value),
-            cancellationToken)
-            .ConfigureAwait(false);
+        if (excludeId.HasValue)
+        {
+            var value = excludeId.Value;
+            query = query.Where(appointment => appointment.Id != value);
+        }
+
+        return await query.CountAsync(cancellationToken).ConfigureAwait(false) > 0;
     }
 
     public async Task<bool> HasPatientConflictAsync(long patientId, DateTime appointmentDate, int startMinute, int endMinute, long? excludeId = null, CancellationToken cancellationToken = default)
     {
         var date = appointmentDate.Date;
+        var query = context.Appointments.Where(appointment =>
+            appointment.PatientId == patientId &&
+            appointment.AppointmentDate == date &&
+            appointment.Status == AppointmentStatus.Scheduled &&
+            EF.Property<int>(appointment, nameof(AuditableEntity.IsDeleted)) == 0 &&
+            appointment.StartMinute < endMinute &&
+            appointment.EndMinute > startMinute);
 
-        return await context.Appointments.AnyAsync(appointment =>
-                appointment.PatientId == patientId &&
-                appointment.AppointmentDate == date &&
-                appointment.Status == AppointmentStatus.Scheduled &&
-                !appointment.IsDeleted &&
-                appointment.StartMinute < endMinute &&
-                appointment.EndMinute > startMinute &&
-                (!excludeId.HasValue || appointment.Id != excludeId.Value),
-            cancellationToken)
-            .ConfigureAwait(false);
+        if (excludeId.HasValue)
+        {
+            var value = excludeId.Value;
+            query = query.Where(appointment => appointment.Id != value);
+        }
+
+        return await query.CountAsync(cancellationToken).ConfigureAwait(false) > 0;
     }
 
     public async Task AddAsync(Appointment appointment, CancellationToken cancellationToken = default)

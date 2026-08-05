@@ -20,7 +20,7 @@ public sealed class SpecialtiesController(ISpecialtyService specialtyService) : 
         return Ok(result);
     }
 
-    [HttpGet("{id:long}")]
+    [HttpGet("{id:long}", Name = "Specialties_GetById")]
     [ProducesResponseType(typeof(SpecialtyDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<SpecialtyDetailsDto>> GetByIdAsync(long id, CancellationToken cancellationToken)
@@ -43,7 +43,7 @@ public sealed class SpecialtiesController(ISpecialtyService specialtyService) : 
         CancellationToken cancellationToken)
     {
         var specialty = await specialtyService.CreateAsync(request, cancellationToken).ConfigureAwait(false);
-        return CreatedAtAction(nameof(GetByIdAsync), new { id = specialty.Id }, specialty);
+        return CreatedAtRoute("Specialties_GetById", new { id = specialty.Id }, specialty);
     }
 
     [HttpPut("{id:long}")]
