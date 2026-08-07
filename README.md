@@ -2,26 +2,41 @@
 
 API principal do ClinicFlow, responsável pela autenticação, regras de negócio e persistência dos dados clínicos do sistema.
 
-## Visão Geral
+![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)
+![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-Web%20API-5C2D91?logo=dotnet)
+![Oracle](https://img.shields.io/badge/Oracle-Database-F80000?logo=oracle)
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker)
 
-O `ClinicFlow API` fornece os serviços consumidos pelo frontend e centraliza a operação da clínica em um backend organizado, com foco em:
+## Resumo Executivo
 
-- autenticação de usuários;
-- controle de perfis e permissões;
+O `ClinicFlow API` centraliza a lógica do sistema clínico e entrega ao frontend os dados necessários para autenticação, cadastro, consulta e manutenção operacional. O foco é manter a camada de serviço organizada, previsível e pronta para evolução.
+
+## O que esta API resolve
+
+- autenticação de usuários e perfis;
+- controle de permissões por área de acesso;
 - cadastro e consulta de pacientes;
 - cadastro e consulta de médicos;
 - gestão de especialidades;
 - agenda e consultas;
 - prontuário e indicadores operacionais;
-- padronização de respostas e tratamento de erros.
+- tratamento padronizado de erros e respostas.
+
+## Diferenciais técnicos
+
+- arquitetura em camadas para separar domínio, aplicação, infraestrutura e entrada HTTP;
+- uso de Oracle como banco relacional principal;
+- integração pronta para Docker;
+- contratos e serviços organizados para facilitar testes e manutenção;
+- endpoints pensados para consumo por frontend desacoplado.
 
 ## Arquitetura
 
-O projeto segue uma separação em camadas para facilitar manutenção, testes e evolução:
+O projeto segue uma separação em camadas:
 
-- `ClinicFlow.Api` - camada de entrada HTTP, controllers, filtros e configuração da aplicação;
-- `ClinicFlow.Application` - casos de uso, validações e serviços de aplicação;
-- `ClinicFlow.Domain` - entidades, contratos e regras de domínio;
+- `ClinicFlow.Api` - controllers, filtros, configuração e entrada HTTP;
+- `ClinicFlow.Application` - casos de uso, validações e serviços;
+- `ClinicFlow.Domain` - entidades, contratos e regras de negócio;
 - `ClinicFlow.Infrastructure` - acesso a dados, repositórios e integrações.
 
 ## Tecnologias
@@ -106,7 +121,14 @@ Os endpoints podem variar conforme a evolução da solução, mas a API normalme
 - tratamento centralizado de erros;
 - autenticação baseada em sessão/token conforme o fluxo da aplicação;
 - organização para reduzir acoplamento entre interface e persistência;
-- preparo para execução em contêiner.
+- preparo para execução em contêiner;
+- documentação pensada para facilitar onboarding e revisão técnica.
+
+## Status do Projeto
+
+- backend funcional e integrado ao frontend;
+- pronto para execução local ou via Docker;
+- evoluindo com foco em experiência profissional e apresentação de portfólio.
 
 ## Relacionado ao Frontend
 
